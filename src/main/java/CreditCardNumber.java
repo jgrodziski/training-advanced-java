@@ -48,19 +48,35 @@ public class CreditCardNumber {
         }
     }
 
-    public static int calculateChecksum(String number){
-        int oddSum = 0;
+
+
+    private static int[] getChecksums(String number){
+        int oddSum  = 0;
         int evenSum = 0;
         for (int i = 0; i < number.length() ; i++ ) {
             int b = digitAt(number, i);
-            if ((i & 1) == 0) { //odd
-                oddSum += b;
-            } else { //even
+            if ((i & 1) == 0) { //even pair
                 String result = Integer.toString(b * 2);
                 int resultSumOfDigits = sumDigits(result);
                 evenSum += resultSumOfDigits;
+            } else { //odd
+                oddSum += b;
             }
         }
+        return new int[]{oddSum,evenSum};
+    }
+
+    public static boolean validateChecksum(String number){
+        int[] checksums = getChecksums(number);
+        int oddSum  = checksums[0];
+        int evenSum = checksums[1];
+        return (oddSum + evenSum) % 10 == 0;
+    }
+
+    public static int calculateChecksum(String number){
+        int[] checksums = getChecksums(number);
+        int oddSum  = checksums[0];
+        int evenSum = checksums[1];
         return ((oddSum + evenSum)*9) % 10;
     }
 
@@ -68,13 +84,13 @@ public class CreditCardNumber {
         return Integer.valueOf(new String(new char[]{string.charAt(index)}));
     }
 
-    public static boolean isChecksumValid(String number, int checksum){
-        return digitAt(number, number.length()-1) == checksum;
+    public static boolean isChecksumValid(String number){
+        int calculatedChecksum = calculateChecksum(number.substring(0, number.length() - 1));
+        boolean resultChecksumEquality = digitAt(number, number.length()-1) == calculatedChecksum;
+        boolean resultRemainderIsZero = validateChecksum(number);
+        return resultChecksumEquality && resultRemainderIsZero;
     }
 
-    public static boolean isChecksumValid(String number){
-        return isChecksumValid(number, calculateChecksum(number.substring(0, number.length() - 1)));
-    }
 
     private static int sumDigits(String number){
         checkOnlyDigits(number);

@@ -1,3 +1,5 @@
+import com.google.common.collect.Lists;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -8,14 +10,14 @@ import java.util.concurrent.*;
 public class ExecutorCreditCardValidator {
 
     public static ResultatVI countValidInvalid(List<CreditCard> allCards) throws InterruptedException, ExecutionException {
-        List<List<CreditCard>> partition = partition(allCards, 32);
-        List<CountValidTask> tasks = new ArrayList<CountValidTask>(32);
+        List<List<CreditCard>> partition = Lists.partition(allCards, 128);
+        List<CountValidTask> tasks = new ArrayList<CountValidTask>(128);
 
         for (List<CreditCard> creditCards : partition) {
             tasks.add(new CountValidTask(creditCards));
         }
 
-        ExecutorService executor = Executors.newFixedThreadPool(8);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
 
         List<Future<ResultatVI>> resultats = executor.invokeAll(tasks);
 
@@ -32,7 +34,7 @@ public class ExecutorCreditCardValidator {
     public static void validate(List<CreditCard> cards) throws InterruptedException, ExecutionException {
         List<ValidateAndSumTask> tasks = new ArrayList<ValidateAndSumTask>(cards.size());
 
-        for (List<CreditCard> chunk : partition(cards, 10000)) {
+        for (List<CreditCard> chunk : Lists.partition(cards, 100)) {
             tasks.add(new ValidateAndSumTask(chunk));
         }
 
@@ -49,20 +51,6 @@ public class ExecutorCreditCardValidator {
         System.out.println("List des soldes est de "+sum);
 
 
-    }
-
-    private static List<List<CreditCard>> partition(List<CreditCard> cards, int chunkSize){
-        int chunks = cards.size() / chunkSize;
-        List<List<CreditCard>> partition = new ArrayList<List<CreditCard>>();
-        int lo = 0;
-        int hi = chunkSize;
-        for(int i = 0 ; i < chunks-1 ; i++){
-            partition.add(cards.subList(lo, hi));
-            lo += chunkSize;
-            hi += chunkSize;
-        }
-        partition.add(cards.subList(lo, cards.size()));
-        return partition;
     }
 
 

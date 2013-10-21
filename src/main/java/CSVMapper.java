@@ -5,9 +5,10 @@ import java.util.List;
  */
 public class CSVMapper {
 
-    public CreditCardNumber map(List<String> row){
+    public static CreditCard map(List<String> row){
         String issuerNetwork = row.get(0);
         String cardNumber = row.get(1);
-        return new CreditCardNumber(issuerNetwork, cardNumber);
+        Integer balance = Integer.valueOf(row.get(2));
+        return new CreditCard(new CreditCardNumber(issuerNetwork, cardNumber), balance);
     }
 }

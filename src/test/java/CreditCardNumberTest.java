@@ -1,9 +1,12 @@
+import creditcard.CreditCardNumber;
 import junit.framework.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -13,15 +16,18 @@ public class CreditCardNumberTest {
 
     @Test
     public void givenAValidNumberShouldReturnAValidChecksum(){
-        String number = "4973029706404906";
-        Assert.assertTrue("Checksum for number " + number + " is not valid", CreditCardNumber.isChecksumValid(number));
+        try {
+            CreditCardNumber number = new CreditCardNumber("4973029706404906");
+        } catch(Exception e){
+            fail();
+        }
     }
 
 
     @Test
     public void givenAnInvalidNumberShouldReturnAValidChecksum(){
         String number = "30062718604329";
-        Assert.assertTrue("Checksum for number " + number + " is not valid", CreditCardNumber.isChecksumValid(number));
+        Assert.assertTrue("Checksum for number " + number + " is not valid", CreditCardNumber.assertChecksumIsValid(number));
     }
 
     @Test
@@ -32,7 +38,7 @@ public class CreditCardNumberTest {
         tick = System.currentTimeMillis();
         List<CreditCardNumber> result = new ArrayList<CreditCardNumber>(lines.size());
         for (List<String> line : lines) {
-            CreditCardNumber number = new CreditCardNumber(line.get(0), line.get(1));
+            CreditCardNumber number = new CreditCardNumber( line.get(1));
             number.validateChecksum();
             //System.out.println("number "+number+" is validated? "+number.validateChecksum());
             result.add(number);
@@ -40,6 +46,6 @@ public class CreditCardNumberTest {
         }
         System.out.println("validate "+lines.size()+" lines in "+(System.currentTimeMillis()-tick)+" ms");
 
-        //Assert.assertTrue("Checksum for number "+number+" is not valid", CreditCardNumber.isChecksumValid(number));
+        //Assert.assertTrue("Checksum for number "+number+" is not valid", creditcard.CreditCardNumber.assertChecksumIsValid(number));
     }
 }

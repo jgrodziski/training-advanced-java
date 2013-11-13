@@ -27,15 +27,8 @@ public class CSVReader {
         try {
             bufferedReader = new BufferedReader(reader);
             String line = null;
-            String value = null;
             while ((line = bufferedReader.readLine()) != null) {
-                List<String> row = new ArrayList<String>(3);
-                StringTokenizer st = new StringTokenizer(line, delim);
-                while (st.hasMoreElements()) {
-                    value = (String) st.nextElement();
-                    row.add(value);
-                }
-                rows.add(row);
+                rows.add(tokenize(line,delim));
             }
         } finally {
             if (bufferedReader != null) {
@@ -48,8 +41,20 @@ public class CSVReader {
         return rows;
     }
 
+    public static List<String> tokenize(String line, String delim){
+        List<String> row = new ArrayList<String>(3);
+        StringTokenizer st = new StringTokenizer(line, delim);
+        String value = null;
+        while (st.hasMoreElements()) {
+            value = (String) st.nextElement();
+            row.add(value);
+        }
+        return row;
+    }
+
+
     public static List<List <String>> parseCSV(Reader reader) throws IOException {
-        return parse(reader, ",");
+        return parse(reader, ";");
     }
 
 

@@ -25,6 +25,7 @@
             <artifactId>junit-dep</artifactId>
             <version>4.4</version>
         </dependency>
+
     </dependencies>
 
 </project>
